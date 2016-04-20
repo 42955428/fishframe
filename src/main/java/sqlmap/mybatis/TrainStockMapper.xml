@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dgaotech.repository.mybatis.TrainStockDAO">
+	<sql id="Base_Column_List">
+		productCode, productName, productType, stockNum, trainNo, mealsGrpLeadId, trainSubNo
+	</sql>
+	<sql id="whereColumns">
+		<if test="trainSubNo != null and trainSubNo != ''">
+			AND trainSubNo = #{trainSubNo} 
+		</if>
+		<if test="trainNo != null and trainNo != ''">
+			AND trainNo = #{trainNo} 
+		</if>
+		<if test="mealsGrpLeadId != null and mealsGrpLeadId != ''">
+			AND mealsGrpLeadId = #{mealsGrpLeadId} 
+		</if>
+		<if test="productCode != null and productCode != ''">
+			AND productCode = #{productCode} 
+		</if>
+	</sql>
+	<select id="isAssignedForTrain" resultType="int" parameterType="TrainStock">
+		select count(*) 
+		from train_stock
+		where 0 = 0
+		<include refid="whereColumns"></include>
+	</select>
+	<select id="findProductsInStock" resultType="TrainStock" parameterType="TrainStock">
+		select 
+		<include refid="Base_Column_List" />
+		from train_stock
+		where 0 = 0
+		<include refid="whereColumns"></include>
+	</select>
+	<select id="select" resultType="hashmap" parameterType="TrainStock">
+		select
+		<include refid="Base_Column_List" />
+		from train_stock
+		where 0 = 0
+		<include refid="whereColumns"></include>
+	</select>
+		
+	<select id="loadProductFromTrainStock" resultType="TrainStock" parameterType="TrainStock">
+		select
+		T.productCode, T.productName, T.productType, P.price AS price, P.unit AS unit,
+		T.stockNum, T.trainNo, T.mealsGrpLeadId, T.trainSubNo, T.isSale
+		from train_stock T left join product_info P on T.productCode = P.productCode 
+		where 0 = 0
+		<include refid="whereColumns"></include>
+	</select>
+	
+	<delete id="delete" parameterType="TrainStock">
+		delete from
+		train_stock
+		where 0 = 0
+		<include refid="whereColumns"></include>
+	</delete>
+	<insert id="insert" parameterType="TrainStock">
+		insert into train_stock (productCode, productName, productType, stockNum, trainNo, mealsGrpLeadId, trainSubNo)
+		values (#{productCode}, #{productName}, #{productType}, #{stockNum}, #{trainNo}, #{mealsGrpLeadId}, #{trainSubNo})
+	</insert>
+	<update id="updateStockNum" parameterType="TrainStock">
+		update train_stock
+		set stockNum = #{stockNum} 
+		where 0 = 0
+		<include refid="whereColumns"></include>
+	</update>
+
+	<select id="findProductByCategory" parameterType="TrainStock" resultType="hashmap">
+		select distinct p.productId, k.productCode, k.productName, p.unit, k.productType, 
+		       k.stockNum as maxQty, p.price, p.memberPrice, k.isSale 
+		from train_stock k left join product_info p on k.productCode = p.productCode
+		where k.isSale = 1 
+		<if test="productType != null and productType != ''" >
+	      and k.productType = #{productType}
+	    </if> 
+		<if test="trainNo != null and trainNo != ''" >
+	      and k.trainNo = #{trainNo}
+	    </if>
+		<if test="mealsGrpLeadId != null and mealsGrpLeadId != ''" >
+	      and k.mealsGrpLeadId = #{mealsGrpLeadId}
+	    </if>
+	    <if test="trainSubNo != null and trainSubNo != ''" >
+	      and k.trainSubNo = #{trainSubNo}
+	    </if>
+		order by p.productId ASC
+	</select>
+	
+	<update id="updateStockIsSale" parameterType="TrainStock">
+		update train_stock
+		set isSale = #{isSale} 
+		where 0 = 0
+		<include refid="whereColumns"></include>
+	</update>
+	
+</mapper>

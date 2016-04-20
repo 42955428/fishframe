@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dgaotech.repository.mybatis.CategoryDAO">
+
+	<sql id="TABLE_CATEGORY_INFO">Category_Info</sql>
+
+	<resultMap id="CategoryInfoBaseResultMap" type="com.dgaotech.dgfw.entity.ProductCategory">
+		<id property="id" column="id" />
+		<result property="category" column="category" />
+		<result property="typeValue" column="typeValue" />
+		<result property="isActive" column="isActive" />
+		<result property="optId" column="optId" />
+	</resultMap>
+	<select id="getcategoryPage" resultMap="CategoryInfoBaseResultMap">
+		select * from product_category
+	</select>
+</mapper>

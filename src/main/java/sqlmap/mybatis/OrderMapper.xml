@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dgaotech.dgfw.dao.OrderDAO">
+
+	<sql id="TABLE_ORDER_INFO">order_info</sql>
+	<sql id="TABLE_ORDER_DETAIL">order_detail</sql>
+
+	<resultMap id="OrderBaseResultMap" type="com.dgaotech.dgfw.entity.OrderInfo">
+		<id property="orderNo" column="orderNo" />
+		<result property="appUserMobile" column="appUserMobile" />
+		<result property="orderDate" column="orderDate" />
+		<result property="orderDate1" column="orderDate1" />
+		<result property="orderType" column="orderType" />
+		<result property="deliveryDate" column="deliveryDate" />
+		<result property="orderType1" column="orderType1" />
+		<result property="orderStatus" column="orderStatus" />
+		<result property="deliverAdress" column="deliverAdress" />
+		<result property="orderStatus1" column="orderStatus1" />
+		<result property="orderAmt" column="orderAmt" />
+		<result property="deliverType" column="deliverType" />
+		<result property="stationDesc" column="stationDesc" />
+		<result property="payMethod" column="payMethod" />
+		<result property="actualAmt" column="actualAmt" />
+		<result property="trainNo" column="trainNo" />
+		<result property="carriageNo" column="carriageNo" />
+		<result property="seatNo" column="seatNo" />
+		<result property="trainSubNo" column="trainSubNo" />
+		<result property="mealsGrpLeadId" column="mealsGrpLeadId" />
+		<result property="bureau" column="bureau" />
+		<result property="departureDate" column="departureDate" />
+		<result property="preOrderDate" column="preOrderDate" />
+		<result property="assignedFlag" column="assignedFlag" />
+	</resultMap>
+
+	<resultMap id="OrderDetailBaseResultMap" type="com.dgaotech.dgfw.entity.OrderDetail">
+		<result property="orderNo" column="orderNo" />
+		<result property="productCode" column="productCode" />
+		<result property="productName" column="productName" />
+		<result property="productType" column="productType" />
+		<result property="productNum" column="productNum" />
+		<result property="price" column="price" />
+		<result property="unit" column="unit" />
+		<result property="amount" column="amount" />
+	</resultMap>
+
+
+	<select id="getPage" resultMap="OrderBaseResultMap">
+		select * from order_info
+		<where>
+			<if test="null != appUserMobile and '' != appUserMobile"> and appUserMobile like concat('%', #{appUserMobile},'%')
+			</if>
+		</where>
+		order by orderDate desc
+	</select>
+
+	<!--  <select id="getPreOrderList" resultMap="OrderBaseResultMap">
+		select * from order_info where orderType = 9 and mealsGrpLeadId =
+		#{userId,jdbcType=VARCHAR} order by orderDate desc
+	</select>-->
+	   
+	
+	<select id="getPreOrderList" resultMap="OrderBaseResultMap">
+	     select * from order_info
+	     <where>  
+	        <if test="trainNo != null and trainNo != ''">
+	          trainNo = #{trainNo,jdbcType=VARCHAR}
+	        </if>          	
+	        <if test="userId != null and userId != ''" >
+	         and mealsGrpLeadId = #{userId,jdbcType=VARCHAR} 
+	        </if> 
+	         <if test="orderDate != null and orderDate != ''" >	  
+	         and orderDate like concat('%',#{orderDate,jdbcType=TIME },'%') 
+	        </if>           
+		 	and orderType = 9  order by orderDate desc
+		  </where>
+	</select>
+	
+	
+
+	<select id="getPreOrderDetail" resultMap="OrderDetailBaseResultMap">
+		select * from order_detail where OrderNo = #{orderId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getPreOrderDetail1" resultMap="OrderDetailBaseResultMap">
+		select * from order_detail where OrderNo = #{0}
+	</select>
+
+
+</mapper>
